@@ -31,4 +31,4 @@ jobs:
         image: ${{ fromJSON(needs.changes.outputs.images) }}
     uses: nascit/docker-build/.github/workflows/docker-publish.yml@main
     with:
-      image: ${{ matrix.image }}-nascit
+      image: ${{ matrix.image }}
