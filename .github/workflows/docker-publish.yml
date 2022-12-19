@@ -19,13 +19,12 @@ jobs:
       contents: read
       packages: write
       id-token: write
-
+    outputs:
+      digest: ${{ steps.build.outputs.digest }}
+      tags: ${{ steps.meta.outputs.tags }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
-
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v2
 
       - name: Setup Docker buildx
         uses: docker/setup-buildx-action@v2.2.1
@@ -43,7 +42,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v4.1.1
         with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          images: ${{ env.REGISTRY }}/nascit-${{ env.IMAGE_NAME }}
           tags: |
             type=sha,enable=true,priority=200,prefix=sha-,suffix=,format=short
             # branch event
@@ -55,11 +54,21 @@ jobs:
         with:
           context: ${{ env.IMAGE_NAME }}
           push: true
-          # tags: ${{ steps.meta.outputs.tags }}
-          tags: ghcr.io/${{ github.repository }}:latest
+          tags: ${{ steps.meta.outputs.tags }}
+          # tags: ghcr.io/${{ github.repository }}:latest
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+      - name: Run Checkov Action
+        id: checkov
+        uses: bridgecrewio/checkov-action@master
+        with:
+          docker_image: ${{ env.IMAGE_NAME }}
+          dockerfile_path: ${{ format('{0}/Dockerfile', env.IMAGE_NAME) }}
+          log_level: DEBUG
+          quiet: true
+          soft_fail: true
 
   sign:
     runs-on: ubuntu-latest
@@ -79,5 +88,5 @@ jobs:
         # This step uses the identity token to provision an ephemeral certificate
         # against the sigstore community Fulcio instance.
         run: COSIGN_EXPERIMENTAL=1 echo "${{ needs.build.outputs.tags }}" | xargs -I {} cosign sign {}@${{ needs.build.outputs.digest }} \
-              -a "repo=${{ github.repository }}" --verbose
+              -a "repo=${{ github.repository }}" -a "workflow=${{ github.workflow }}" -a "ref=${{ github.sha }}" --verbose
 
