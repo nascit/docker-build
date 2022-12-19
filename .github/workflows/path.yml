@@ -1,4 +1,4 @@
-name: Path
+name: Container image pipeline
 
 on:
   push:
@@ -6,11 +6,10 @@ on:
 
 jobs:
   changes:
+    name: Check which container image was updated
     runs-on: ubuntu-latest
-    # permissions:
-    #   pull-requests: read
     outputs:
-      packages: ${{ steps.filter.outputs.changes }}
+      images: ${{ steps.filter.outputs.changes }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -25,16 +24,12 @@ jobs:
               - 'ubuntu/**'
 
   build:
+    name: Build and push image
     needs: changes
     strategy:
       matrix:
-        # Parse JSON array containing names of all filters matching any of changed files
-        # e.g. ['package1', 'package2'] if both package folders contains changes
-        package: ${{ fromJSON(needs.changes.outputs.packages) }}
+        image: ${{ fromJSON(needs.changes.outputs.images) }}
     runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-
-      - name: Check path
-        run: echo ${{ matrix.package }}
+    uses: nascit/docker-build/.github/workflows/docker-publish.yml@main
+    with:
+      image: ${{ matrix.image }}-nascit
