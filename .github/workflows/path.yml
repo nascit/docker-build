@@ -18,8 +18,8 @@ jobs:
         id: filter
         with:
           filters: |
-            alpine: alpine
-            ubuntu: ubuntu
+            alpine: alpine/*
+            ubuntu: ubuntu/*
 
   build:
     needs: changes
