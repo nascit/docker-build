@@ -54,7 +54,7 @@ jobs:
         uses: docker/build-push-action@v3.2.0
         with:
           context: ${{ env.IMAGE_NAME }}
-          push: false
+          push: true
           # tags: ${{ steps.meta.outputs.tags }}
           tags: ghcr.io/${{ github.repository }}:latest
           labels: ${{ steps.meta.outputs.labels }}
