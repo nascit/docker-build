@@ -7,17 +7,19 @@ on:
 jobs:
   changes:
     runs-on: ubuntu-latest
-    permissions:
-      pull-requests: read
+    # permissions:
+    #   pull-requests: read
     outputs:
       packages: ${{ steps.filter.outputs.changes }}
     steps:
-    - uses: dorny/paths-filter@v2
-      id: filter
-      with:
-        filters: |
-          alpine: alpine
-          ubuntu: ubuntu
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - uses: dorny/paths-filter@v2
+        id: filter
+        with:
+          filters: |
+            alpine: alpine
+            ubuntu: ubuntu
 
   build:
     needs: changes
