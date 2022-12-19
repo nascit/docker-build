@@ -29,7 +29,6 @@ jobs:
     strategy:
       matrix:
         image: ${{ fromJSON(needs.changes.outputs.images) }}
-    runs-on: ubuntu-latest
     uses: nascit/docker-build/.github/workflows/docker-publish.yml@main
     with:
       image: ${{ matrix.image }}-nascit
