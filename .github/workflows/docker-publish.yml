@@ -54,8 +54,8 @@ jobs:
         with:
           context: ${{ env.IMAGE_NAME }}
           push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          # tags: ghcr.io/${{ github.repository }}:latest
+          # tags: ${{ steps.meta.outputs.tags }}
+          tags: ghcr.io/${{ github.repository }}:latest
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
