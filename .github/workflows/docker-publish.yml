@@ -93,8 +93,8 @@ jobs:
           COSIGN_EXPERIMENTAL: "true"
         # This step uses the identity token to provision an ephemeral certificate
         # against the sigstore community Fulcio instance.
-        run: COSIGN_EXPERIMENTAL=1 echo "${{ needs.build.outputs.tags }}" | xargs -I {} cosign sign {}@${{ needs.build.outputs.digest }} \
-              -a "repo=${{ github.repository }}" -a "workflow=${{ github.workflow }}" -a "ref=${{ github.sha }}" --verbose
+        run: COSIGN_EXPERIMENTAL=1 echo "${{ needs.build.outputs.tags }}" | xargs -I {} cosign sign {}@${{ needs.build.outputs.digest }}
+              # -a "repo=${{ github.repository }}" -a "workflow=${{ github.workflow }}" -a "ref=${{ github.sha }}" --verbose
 
   verify:
     runs-on: ubuntu-latest
