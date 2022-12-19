@@ -44,7 +44,7 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/nascit-${{ env.IMAGE_NAME }}
           tags: |
-            type=sha,enable=true,priority=200,prefix=sha-,suffix=,format=short
+            # type=sha,enable=true,priority=200,prefix=sha-,suffix=,format=short
             # branch event
             type=ref,enable=true,priority=100,prefix=nascit-,suffix=,event=branch
 
@@ -54,8 +54,8 @@ jobs:
         with:
           context: ${{ env.IMAGE_NAME }}
           push: true
-          # tags: ${{ steps.meta.outputs.tags }}
-          tags: ghcr.io/${{ github.repository }}:latest
+          tags: ${{ steps.meta.outputs.tags }}
+          # tags: ghcr.io/${{ github.repository }}:latest
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
@@ -64,9 +64,7 @@ jobs:
         id: checkov
         uses: bridgecrewio/checkov-action@master
         with:
-          docker_image: ${{ env.IMAGE_NAME }}
-          dockerfile_path: ${{ format('{0}/Dockerfile', env.IMAGE_NAME) }}
-          log_level: DEBUG
+          framework: dockerfile
           quiet: true
           soft_fail: true
 
